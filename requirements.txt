@@ -1,0 +1,5 @@
+google-cloud-vision
+google-cloud-translate
+pynput
+mss
+python-dotenv
