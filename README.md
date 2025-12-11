@@ -129,4 +129,4 @@ Verifique se o jogo está em modo "Tela Cheia Exclusiva". Mude para "Janela Sem 
 
 ## 📄 Licença
 
-Este projeto está licenciado sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+Este projeto está licenciado sob a licença MIT.
