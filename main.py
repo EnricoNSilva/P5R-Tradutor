@@ -1,7 +1,11 @@
+from utils import configurar_dpi # ajustar a escala de DPI no Windows
 from pegar_area import selecionar_area
 from overlay import iniciar_overlay
 
 def main():
+
+    configurar_dpi() # Precisa ser chamado antes de qualquer coisa no Windows
+
     print("--- P5R Tradutor v3 (Correção Inception) ---")
     print("F10: Traduzir | F9: Esconder | ESC: FECHAR FORÇADO")
 
