@@ -1,55 +1,31 @@
-import threading
 from pynput import keyboard, mouse
-from queue import Queue
 
-fila_texto = Queue()
-
-
-def on_key_release(key, area):
+def iniciar_listeners(fila_eventos):
     """
-    Trata os eventos de teclado.
+    Inicia os listeners globais e envia eventos para a fila.
     """
-    try:
-        if key == keyboard.Key.delete:
-            print("🛑 Encerrando forçado...")
-            import os
-            os._exit(0)
-            return False
+    
+    # --- TECLADO ---
+    def on_release(key):
+        try:
+            if key == keyboard.Key.f10:
+                fila_eventos.put(("EVENT_F10", None))
+            elif key == keyboard.Key.delete:
+                import os
+                print("🛑 Encerrando (DELETE)...")
+                os._exit(0)
+        except Exception:
+            pass
 
-        if key == keyboard.Key.f10:
-            if not area:
-                print("⚠ Nenhuma área selecionada!")
-                return
-            # Lazy import para evitar circular import
-            from captura import processar_captura
-            t = threading.Thread(target=processar_captura, args=(fila_texto, area))
-            t.start()
-
-        if key == keyboard.Key.f9:
-            fila_texto.put("TOGGLE")
-
-    except Exception as e:
-        print(f"Erro teclado: {e}")
-
-
-def create_input_listeners(area_capturada):
-    """
-    Cria listeners de teclado e mouse e retorna a fila de mensagens.
-    """
-
-    key_listener = keyboard.Listener(
-        on_release=lambda key: on_key_release(key, area_capturada)
-    )
-    key_listener.start()
-
+    # --- MOUSE ---
     def on_click(x, y, button, pressed):
+        # Detecta quando solta o clique (Release) para evitar conflitos
         if not pressed and button == mouse.Button.left:
-            dentro_x = area_capturada["x1"] <= x <= area_capturada["x2"]
-            dentro_y = area_capturada["y1"] <= y <= area_capturada["y2"]
-            if not (dentro_x and dentro_y):
-                fila_texto.put("CMD_HIDE_CLICK")
+            fila_eventos.put(("EVENT_CLICK", (x, y)))
+
+    # Inicia as threads dos listeners
+    kb_listener = keyboard.Listener(on_release=on_release)
+    kb_listener.start()
 
     mouse_listener = mouse.Listener(on_click=on_click)
     mouse_listener.start()
-
-    return fila_texto

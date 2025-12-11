@@ -1,23 +1,17 @@
 from utils import configurar_dpi # ajustar a escala de DPI no Windows
-from pegar_area import selecionar_area
-from overlay import iniciar_overlay
+from overlay import P5RTranslatorApp
 
 def main():
 
     configurar_dpi() # Precisa ser chamado antes de qualquer coisa no Windows
 
-    print("--- P5R Tradutor v3 (Correção Inception) ---")
-    print("F10: Traduzir | F9: Esconder | ESC: FECHAR FORÇADO")
+    print("O programa está rodando em segundo plano.")
+    print("-> Pressione F10 para Selecionar e Traduzir.")
+    print("-> Clique fora da tradução para fechar.")
+    print("-> Pressione DELETE para encerrar.")
 
-    area = selecionar_area()
-    print("\n=== ÁREA DEFINIDA ===")
-    print(f"x1 = {area['x1']}")
-    print(f"y1 = {area['y1']}")
-    print(f"x2 = {area['x2']}")
-    print(f"y2 = {area['y2']}")
-    print("=====================\n")
-
-    iniciar_overlay(area)
+    app = P5RTranslatorApp()
+    app.run()
 
 if __name__ == "__main__":
     main()
