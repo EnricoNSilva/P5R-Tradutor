@@ -10,40 +10,39 @@
 
 ## 📖 Visão Geral
 
-O **P5R Translator** é uma ferramenta de tradução de tela em tempo real desenvolvida em Python, projetada especificamente para auxiliar jogadores de **Persona 5 Royal** (e outros jogos com caixas de diálogo fixas) a traduzir textos do inglês para o português instantaneamente.
+O **P5R Translator** é uma ferramenta de tradução de tela em tempo real desenvolvida em Python. Projetada originalmente para **Persona 5 Royal**, ela funciona com qualquer jogo ou aplicação que exiba textos na tela.
 
-O software captura uma região específica da tela, utiliza **OCR (Reconhecimento Óptico de Caracteres)** para extrair o texto e a **Google Cloud Translation API** para traduzi-lo, exibindo o resultado em uma sobreposição (overlay) transparente e não intrusiva.
+Diferente de versões anteriores, esta versão 2.0+ opera em **segundo plano** e permite que o usuário **selecione dinamicamente** a área de tradução a qualquer momento, sem necessidade de configuração prévia de coordenadas.
+
+O software utiliza **OCR (Google Cloud Vision)** para ler o texto e **Google Cloud Translate** para traduzi-lo, exibindo o resultado em uma sobreposição (overlay) inteligente que se adapta ao tamanho da sua seleção.
 
 ---
 
 ## ✨ Funcionalidades
 
-- **🎯 Captura de Região (ROI):** Foca apenas na área de diálogo do jogo, ignorando o resto da tela.
-- **🧠 OCR Inteligente:** Utiliza a `Google Cloud Vision API` para uma leitura de texto precisa, mesmo em fundos complexos.
-- **⚡ Tradução Instantânea:** Conecta-se à `Google Cloud Translation API` para traduções rápidas e contextuais.
-- **👻 Overlay Não-Intrusivo:** A tradução aparece em uma janela transparente "Always-on-Top" sobre o jogo.
-- **🛡️ Anti-Espelho:** O sistema oculta automaticamente a janela de tradução antes de capturar a tela, evitando loops de captura.
-- **🖱️ Auto-Hide:** A legenda desaparece automaticamente ao clicar fora da área de diálogo, retomando o foco ao jogo.
-- **⌨️ Atalhos Globais:** Controle total via teclado sem precisar sair do jogo.
+- **🖱️ Seleção Dinâmica ("Circle to Search"):** Ao pressionar o atalho, a tela congela em um overlay transparente, permitindo que você desenhe um retângulo sobre o texto que deseja traduzir.
+- **📏 DPI Aware:** Detecta e corrige automaticamente a escala de DPI do Windows, garantindo que a captura de tela seja precisa mesmo em monitores com zoom (125%, 150%, etc.).
+- **🅰️ Fonte Adaptativa:** O tamanho da fonte da tradução se ajusta automaticamente para caber perfeitamente dentro da caixa que você desenhou.
+- **👻 Overlay Não-Intrusivo:** A tradução aparece flutuando sobre o jogo. Clique fora dela para fechá-la e voltar ao gameplay imediatamente.
+- **🧠 OCR Inteligente:** Leitura precisa mesmo em fundos complexos (menus de jogos, balões de fala).
+- **🛡️ Workflow Otimizado:** O programa roda invisível na bandeja, ativando apenas quando solicitado.
 
 ---
 
 ## ⚙️ Pré-requisitos
 
-Antes de começar, certifique-se de ter:
-
-1. **Python 3.8** ou superior instalado.
-2. Uma conta no **Google Cloud Platform (GCP)** com faturamento ativado (necessário para as APIs, mas geralmente dentro do nível gratuito para uso pessoal).
-3. O jogo configurado em modo **Janela Sem Bordas (Borderless Window)** ou **Janela** (o modo Tela Cheia Exclusiva pode impedir a sobreposição).
+1. **Python 3.8** ou superior.
+2. Conta no **Google Cloud Platform (GCP)** com as APIs `Vision` e `Translation` ativadas (requer `credentials.json`).
+3. O jogo configurado em modo **Janela Sem Bordas (Borderless Window)** ou **Janela** (para garantir que o overlay apareça sobre ele).
 
 ---
 
 ## 🚀 Instalação
 
-### 1. Clone ou Baixe o Repositório
+### 1. Clone o Repositório
 
 ```bash
-git clone https://github.com/seu-usuario/P5R_Tradutor.git
+git clone [https://github.com/seu-usuario/P5R_Tradutor.git](https://github.com/seu-usuario/P5R_Tradutor.git)
 cd P5R_Tradutor
 ```
 
@@ -84,64 +83,49 @@ Para que o OCR e a Tradução funcionem, você precisa das credenciais do Google
 
 ---
 
-## 🛠️ Configuração da Área de Captura
-
-O programa precisa saber exatamente onde a caixa de diálogo do jogo está na sua tela.
-
-1. Abra o arquivo `main.py`.
-2. Localize a seção de coordenadas:
-   ```python
-   # --- SUAS COORDENADAS ---
-   x1 = 870
-   y1 = 1400
-   x2 = 1904
-   y2 = 1607
-   ```
-3. Ajuste esses valores conforme a resolução do seu monitor e a posição da janela do jogo.
-
-> **Dica:** Você pode usar um script simples com `pynput` ou `pyautogui` para imprimir a posição atual do mouse e descobrir as coordenadas `(x1, y1)` (canto superior esquerdo) e `(x2, y2)` (canto inferior direito) da caixa de diálogo.
-
----
-
 ## ▶️ Como Usar
 
-1. Inicie o programa:
-   ```bash
-   python main.py
-   ```
-2. Abra o jogo.
-3. Quando aparecer um diálogo que deseja traduzir, use os atalhos:
+O fluxo de uso foi simplificado para máxima imersão:
 
-| Tecla | Ação |
-| :--- | :--- |
-| **`F10`** | **Traduzir:** Captura a tela, processa e exibe a tradução. |
-| **`F9`** | **Alternar Visibilidade:** Esconde ou mostra a janela de tradução manualmente. |
-| **`Clique Fora`** | **Esconder:** Clicar fora da área da legenda esconde a tradução automaticamente. |
-| **`DELETE`** | **Encerrar:** Fecha o programa imediatamente (Kill Switch). |
+### Inicie o programa:
+ `python main.py`.
 
----
+O terminal mostrará que o programa está rodando em segundo plano.
 
-## 🧠 Arquitetura Técnica
+### No Jogo:
+- **Pressione F10**: A tela entrará em modo de seleção (ficará levemente escurecida).
+- **Arraste o Mouse**: Desenhe um retângulo sobre o diálogo em inglês.
+- **Solte o Mouse**: O programa processará a imagem e a tradução aparecerá instantaneamente no local selecionado.
 
-O projeto utiliza concorrência para garantir que a interface não congele durante as requisições de rede.
+### Voltar ao Jogo:
+- **Clique Fora**: Basta clicar em qualquer lugar fora da caixa de tradução para escondê-la.
 
-| Componente | Tecnologia | Responsabilidade |
-| :--- | :--- | :--- |
-| **Frontend** | `tkinter` | Renderiza a janela de sobreposição transparente. |
-| **Input Listener** | `pynput` | Monitora teclas (F10, DEL) e cliques do mouse globalmente. |
-| **Backend Worker** | `threading` | Executa as tarefas pesadas (I/O, OCR, Tradução) em background. |
-| **Screen Capture** | `mss` | Captura de tela ultra-rápida e eficiente. |
-| **Comunicação** | `queue` | Sincroniza dados entre as threads de trabalho e a thread da UI. |
+### Encerrar:
+- **Pressione DELETE**: Fecha o programa completamente.
 
----
+## 🧠 Arquitetura Técnica (Modular)
 
-## ⚠️ Solução de Problemas Comuns
+O projeto foi refatorado para ser modular e fácil de manter:
 
-- **Erro de Credenciais:** Certifique-se de que `credentials.json` está na pasta correta e que a variável de ambiente `GOOGLE_APPLICATION_CREDENTIALS` está sendo definida no código (ou no seu sistema).
-- **Janela Preta/Invisível:** Verifique se o jogo está em modo "Janela Sem Bordas". Em "Tela Cheia", o jogo pode desenhar por cima do tradutor.
-- **Tradução Estranha:** Verifique se as coordenadas `x1, y1, x2, y2` estão cortando o texto ou pegando elementos gráficos indesejados.
+| Arquivo | Responsabilidade |
+|---------|------------------|
+| `main.py` | Ponto de entrada. Configura o DPI e inicia o App. |
+| `overlay.py` | Gerencia a Interface Gráfica (Tkinter), a lógica de seleção de área e o cálculo dinâmico de fonte. |
+| `ocr.py` | Camada de serviço que se comunica com as APIs do Google (Vision e Translate). |
+| `captura.py` | Responsável por tirar o screenshot da região definida (mss). |
+| `input_handlers.py` | Escuta os eventos globais de teclado e mouse (pynput) e os envia para a fila de eventos. |
+| `utils.py` | Utilitários de sistema, como a configuração de ctypes para DPI Awareness. |
 
----
+## ⚠️ Solução de Problemas
+
+### A seleção vermelha não alinha com o mouse:
+O fix de DPI deve resolver isso automaticamente. Verifique se o `utils.py` está sendo chamado no início do `main.py`.
+
+### Erro de "Billing" no Terminal:
+A API do Google Vision requer que uma conta de faturamento esteja vinculada ao projeto, mesmo para o nível gratuito. Verifique seu console do Google Cloud.
+
+### A tradução não aparece:
+Verifique se o jogo está em modo "Tela Cheia Exclusiva". Mude para "Janela Sem Bordas".
 
 ## 📄 Licença
 
